@@ -660,7 +660,7 @@ class VisionTransformer(nn.Module):
             self.global_pool = global_pool
         self.head = nn.Linear(self.embed_dim, num_classes) if num_classes > 0 else nn.Identity()
 
-    def _pos_embed(self, x: torch.Tensor) -> torch.Tensor:
+    def _pos_embed(self, x: torch.Tensor, seq_len=196) -> torch.Tensor:
         if self.dynamic_img_size:
             B, H, W, C = x.shape
             pos_embed = resample_abs_pos_embed(
@@ -681,7 +681,7 @@ class VisionTransformer(nn.Module):
         if self.no_embed_class:
             # deit-3, updated JAX (big vision)
             # position embedding does not overlap with class token, add then concat
-            x = x + pos_embed
+            x = x + pos_embed[:,:seq_len,:]
             if to_cat:
                 x = torch.cat(to_cat + [x], dim=1)
         else:
@@ -689,7 +689,7 @@ class VisionTransformer(nn.Module):
             # pos_embed has entry for class token, concat then add
             if to_cat:
                 x = torch.cat(to_cat + [x], dim=1)
-            x = x + pos_embed
+            x = x + pos_embed[:,:seq_len+1,:]
 
         return self.pos_drop(x)
 
