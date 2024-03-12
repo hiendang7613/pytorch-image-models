@@ -224,9 +224,9 @@ class Block(nn.Module):
         self.ls2 = LayerScale(dim, init_values=init_values) if init_values else nn.Identity()
         self.drop_path2 = DropPath(drop_path) if drop_path > 0. else nn.Identity()
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         x = x + self.drop_path1(self.ls1(self.attn(self.norm1(x))))
-        x = x + self.drop_path3(self.ls3(self.cross_attn(self.norm3(x))))
+        x = x + self.drop_path3(self.ls3(self.cross_attn(self.norm3(x), y)))
         x = x + self.drop_path2(self.ls2(self.mlp(self.norm2(x))))
         return x
 
