@@ -202,7 +202,7 @@ class Block(nn.Module):
         self.drop_path1 = DropPath(drop_path) if drop_path > 0. else nn.Identity()
         
         self.norm3 = norm_layer(dim)
-        self.cross_attn = Attention(
+        self.cross_attn = CrossAttention(
             dim,
             num_heads=num_heads,
             qkv_bias=qkv_bias,
